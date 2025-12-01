@@ -1,55 +1,82 @@
-name: Deploy via SSH
+name: Deploy Vite React to Windows IIS
 
 on:
   push:
-    branches: [ "main" ]
+    branches: ["main"]
 
 jobs:
   deploy:
     runs-on: ubuntu-latest
-
     steps:
-      - name: Checkout Code
+      - name: Checkout repo
         uses: actions/checkout@v4
 
       - name: Setup Node.js
-        uses: actions/setup-node@v4
+        uses: actions/setup-node@v3
         with:
-          node-version: "18"
-          cache: "npm"
+          node-version: 18
 
-      - name: Install Dependencies
+      - name: Install dependencies
         run: npm ci
 
-      - name: Build Vite App
+      - name: Build Vite app
         run: npm run build
 
-      # Upload Vite dist folder
-      - name: Copy Build to EC2
+      - name: Debug - list repo and dist
+        run: |
+          echo "=== repo root ==="
+          ls -la
+          echo "=== find dist ==="
+          ls -la dist || echo "dist folder not found"
+
+      # 1) upload dist to temp folder on Windows server using SSH key
+      - name: Copy dist to EC2 temp folder
         uses: appleboy/scp-action@master
         with:
           host: ${{ secrets.EC2_HOST }}
           username: ${{ secrets.EC2_USERNAME }}
-          password: ${{ secrets.EC2_PASSWORD }}
-          port: 22
+          key: ${{ secrets.EC2_SSH_KEY }}
+          port: ${{ secrets.EC2_PORT }}
           source: "dist/*"
           target: "C:/Users/Administrator/Desktop/temp_build"
           strip_components: 1
 
-      # Deploy to IIS
-      - name: Deploy to IIS
+      # 2) Move files into IIS folder with PowerShell commands over SSH
+      - name: Deploy to IIS (move files into site)
         uses: appleboy/ssh-action@master
         with:
           host: ${{ secrets.EC2_HOST }}
           username: ${{ secrets.EC2_USERNAME }}
-          password: ${{ secrets.EC2_PASSWORD }}
-          port: 22
+          key: ${{ secrets.EC2_SSH_KEY }}
+          port: ${{ secrets.EC2_PORT }}
           script: |
             $iisPath = "C:\inetpub\wwwroot\pro"
             $tempPath = "C:\Users\Administrator\Desktop\temp_build"
 
+            Write-Output "Creating IIS site folder if it doesn't exist..."
+            if (-not (Test-Path -Path $iisPath)) {
+              New-Item -Path $iisPath -ItemType Directory -Force | Out-Null
+            }
+
+            Write-Output "Clearing previous site files (keeping web.config if you placed it separately)..."
             Remove-Item -Path "$iisPath\*" -Recurse -Force -ErrorAction SilentlyContinue
+
+            Write-Output "Moving new files into IIS path..."
             Move-Item -Path "$tempPath\*" -Destination "$iisPath" -Force
+
+            Write-Output "Cleaning up temp folder..."
             Remove-Item -Path $tempPath -Recurse -Force -ErrorAction SilentlyContinue
 
-            Write-Host "Deployed Successfully"
+            Write-Output "IIS deploy finished."
+
+      - name: Confirm deployed files
+        uses: appleboy/ssh-action@master
+        with:
+          host: ${{ secrets.EC2_HOST }}
+          username: ${{ secrets.EC2_USERNAME }}
+          key: ${{ secrets.EC2_SSH_KEY }}
+          port: ${{ secrets.EC2_PORT }}
+          script: |
+            $iisPath = "C:\inetpub\wwwroot\pro"
+            Write-Output "Files in $iisPath:"
+            Get-ChildItem -Path $iisPath -Recurse | Select-Object FullName,Length | Out-String -Width 400
