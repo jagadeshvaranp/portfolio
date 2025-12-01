@@ -15,8 +15,8 @@ jobs:
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: '18'
-          cache: 'npm'
+          node-version: "18"
+          cache: "npm"
 
       - name: Install Dependencies
         run: npm ci
@@ -26,7 +26,7 @@ jobs:
         env:
           CI: false
 
-      # 1. Transfer the build folder to a temporary location on EC2
+      # 1. Upload build files to temporary folder on EC2
       - name: Copy Build to EC2
         uses: appleboy/scp-action@master
         with:
@@ -35,10 +35,10 @@ jobs:
           password: ${{ secrets.EC2_PASSWORD }}
           port: 22
           source: "build/*"
-          target: "C:\inetpub\wwwroot"
+          target: "C:/Users/Administrator/Desktop/temp_build"
           strip_components: 1
 
-      # 2. Log in via SSH and move files to IIS folder
+      # 2. Move files into IIS Website Folder
       - name: Deploy to IIS
         uses: appleboy/ssh-action@master
         with:
@@ -48,15 +48,15 @@ jobs:
           port: 22
           script: |
             $iisPath = "C:\inetpub\wwwroot\pro"
-            $tempPath = "C:\inetpub\wwwroot"
+            $tempPath = "C:\Users\Administrator\Desktop\temp_build"
 
-            # Clean IIS destination
+            # Clean live site folder
             Remove-Item -Path "$iisPath\*" -Recurse -Force -ErrorAction SilentlyContinue
 
-            # Move new files from temp to IIS
+            # Move new files from temp to IIS site folder
             Move-Item -Path "$tempPath\*" -Destination "$iisPath" -Force
 
-            # Clean up temp folder
+            # Clean temporary folder
             Remove-Item -Path $tempPath -Recurse -Force -ErrorAction SilentlyContinue
 
             Write-Host "Deployed Successfully"
