@@ -7,29 +7,33 @@ on:
 jobs:
   deploy:
     runs-on: ubuntu-latest
+
     steps:
       - name: Checkout repo
         uses: actions/checkout@v4
 
       - name: Setup Node.js
-        uses: actions/setup-node@v3
+        uses: actions/setup-node@v4
         with:
-          node-version: 18
+          node-version: 20
+          cache: "npm"
 
       - name: Install dependencies
         run: npm ci
 
       - name: Build Vite app
+        env:
+          VITE_API_BASE_URL: ${{ secrets.VITE_API_BASE_URL }}
         run: npm run build
 
       - name: Debug - list repo and dist
         run: |
           echo "=== repo root ==="
           ls -la
-          echo "=== find dist ==="
-          ls -la dist || echo "dist folder not found"
+          echo "=== dist folder ==="
+          ls -la dist || echo "❌ dist folder not found"
 
-      # 1) upload dist to temp folder on Windows server using SSH key
+      # Upload dist to temp folder on Windows server
       - name: Copy dist to EC2 temp folder
         uses: appleboy/scp-action@master
         with:
@@ -41,8 +45,8 @@ jobs:
           target: "C:/Users/Administrator/Desktop/temp_build"
           strip_components: 1
 
-      # 2) Move files into IIS folder with PowerShell commands over SSH
-      - name: Deploy to IIS (move files into site)
+      # Move files into IIS folder
+      - name: Deploy to IIS
         uses: appleboy/ssh-action@master
         with:
           host: ${{ secrets.EC2_HOST }}
@@ -53,21 +57,21 @@ jobs:
             $iisPath = "C:\inetpub\wwwroot\pro"
             $tempPath = "C:\Users\Administrator\Desktop\temp_build"
 
-            Write-Output "Creating IIS site folder if it doesn't exist..."
+            Write-Output "Creating IIS site folder if missing..."
             if (-not (Test-Path -Path $iisPath)) {
               New-Item -Path $iisPath -ItemType Directory -Force | Out-Null
             }
 
-            Write-Output "Clearing previous site files (keeping web.config if you placed it separately)..."
+            Write-Output "Clearing older files..."
             Remove-Item -Path "$iisPath\*" -Recurse -Force -ErrorAction SilentlyContinue
 
-            Write-Output "Moving new files into IIS path..."
+            Write-Output "Moving new files..."
             Move-Item -Path "$tempPath\*" -Destination "$iisPath" -Force
 
-            Write-Output "Cleaning up temp folder..."
+            Write-Output "Cleaning temp folder..."
             Remove-Item -Path $tempPath -Recurse -Force -ErrorAction SilentlyContinue
 
-            Write-Output "IIS deploy finished."
+            Write-Output "✅ IIS Deployment Complete"
 
       - name: Confirm deployed files
         uses: appleboy/ssh-action@master
@@ -79,4 +83,4 @@ jobs:
           script: |
             $iisPath = "C:\inetpub\wwwroot\pro"
             Write-Output "Files in $iisPath:"
-            Get-ChildItem -Path $iisPath -Recurse | Select-Object FullName,Length | Out-String -Width 400
+            Get-ChildItem -Path $iisPath -Recurse | Select-Object FullName,Length
