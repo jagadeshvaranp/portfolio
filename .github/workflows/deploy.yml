@@ -9,33 +9,46 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Checkout repo
+      # -------------------------------
+      # 1. Checkout Code
+      # -------------------------------
+      - name: Checkout repository
         uses: actions/checkout@v4
 
+      # -------------------------------
+      # 2. Setup Node
+      # -------------------------------
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
           node-version: 20
           cache: "npm"
 
+      # -------------------------------
+      # 3. Install dependencies
+      # -------------------------------
       - name: Install dependencies
         run: npm ci
 
+      # -------------------------------
+      # 4. Build Vite React App
+      # -------------------------------
       - name: Build Vite app
         env:
           VITE_API_BASE_URL: ${{ secrets.VITE_API_BASE_URL }}
         run: npm run build
 
-      - name: Debug - list repo and dist folder
+      # Debug build folder
+      - name: Debug build folder
         run: |
-          echo "=== repo root ==="
+          echo "==== project files ===="
           ls -la
-          echo "=== dist folder ==="
-          ls -la dist || echo "❌ dist folder not found"
+          echo "==== dist ===="
+          ls -la dist || echo "❌ dist not found"
 
-      # ================================
-      # 1) UPLOAD BUILD TO EC2 (PASSWORD)
-      # ================================
+      # -------------------------------
+      # 5. Upload build folder to EC2
+      # -------------------------------
       - name: Copy dist to EC2 temp folder
         uses: appleboy/scp-action@v1
         with:
@@ -47,9 +60,9 @@ jobs:
           target: "C:/Users/Administrator/Desktop/temp_build"
           strip_components: 1
 
-      # ================================
-      # 2) DEPLOY TO IIS USING PASSWORD
-      # ================================
+      # -------------------------------
+      # 6. Deploy to IIS (move files)
+      # -------------------------------
       - name: Deploy to IIS
         uses: appleboy/ssh-action@v1
         with:
@@ -61,25 +74,25 @@ jobs:
             $iisPath = "C:\inetpub\wwwroot\pro"
             $tempPath = "C:\Users\Administrator\Desktop\temp_build"
 
-            Write-Output "Creating IIS site folder if missing..."
+            Write-Output "▶ Creating IIS site folder if missing..."
             if (-not (Test-Path -Path $iisPath)) {
               New-Item -Path $iisPath -ItemType Directory -Force | Out-Null
             }
 
-            Write-Output "Clearing previous site files..."
+            Write-Output "▶ Clearing old files..."
             Remove-Item -Path "$iisPath\*" -Recurse -Force -ErrorAction SilentlyContinue
 
-            Write-Output "Moving new build files into IIS..."
+            Write-Output "▶ Moving new build files..."
             Move-Item -Path "$tempPath\*" -Destination "$iisPath" -Force
 
-            Write-Output "Cleaning temp folder..."
+            Write-Output "▶ Cleaning temp folder..."
             Remove-Item -Path $tempPath -Recurse -Force -ErrorAction SilentlyContinue
 
-            Write-Output "✅ IIS Deployment Completed Successfully!"
+            Write-Output "✅ Deployment Completed Successfully!"
 
-      # ================================
-      # 3) Confirm Deployed Files
-      # ================================
+      # -------------------------------
+      # 7. Confirm deployment
+      # -------------------------------
       - name: Confirm deployed files
         uses: appleboy/ssh-action@v1
         with:
