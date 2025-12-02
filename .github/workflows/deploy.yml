@@ -26,32 +26,36 @@ jobs:
           VITE_API_BASE_URL: ${{ secrets.VITE_API_BASE_URL }}
         run: npm run build
 
-      - name: Debug - list repo and dist
+      - name: Debug - list repo and dist folder
         run: |
           echo "=== repo root ==="
           ls -la
           echo "=== dist folder ==="
           ls -la dist || echo "❌ dist folder not found"
 
-      # Upload dist to temp folder on Windows server
+      # ================================
+      # 1) UPLOAD BUILD TO EC2 (PASSWORD)
+      # ================================
       - name: Copy dist to EC2 temp folder
-        uses: appleboy/scp-action@master
+        uses: appleboy/scp-action@v1
         with:
           host: ${{ secrets.EC2_HOST }}
           username: ${{ secrets.EC2_USERNAME }}
-          key: ${{ secrets.EC2_SSH_KEY }}
+          password: ${{ secrets.EC2_PASSWORD }}
           port: ${{ secrets.EC2_PORT }}
           source: "dist/*"
           target: "C:/Users/Administrator/Desktop/temp_build"
           strip_components: 1
 
-      # Move files into IIS folder
+      # ================================
+      # 2) DEPLOY TO IIS USING PASSWORD
+      # ================================
       - name: Deploy to IIS
-        uses: appleboy/ssh-action@master
+        uses: appleboy/ssh-action@v1
         with:
           host: ${{ secrets.EC2_HOST }}
           username: ${{ secrets.EC2_USERNAME }}
-          key: ${{ secrets.EC2_SSH_KEY }}
+          password: ${{ secrets.EC2_PASSWORD }}
           port: ${{ secrets.EC2_PORT }}
           script: |
             $iisPath = "C:\inetpub\wwwroot\pro"
@@ -62,23 +66,26 @@ jobs:
               New-Item -Path $iisPath -ItemType Directory -Force | Out-Null
             }
 
-            Write-Output "Clearing older files..."
+            Write-Output "Clearing previous site files..."
             Remove-Item -Path "$iisPath\*" -Recurse -Force -ErrorAction SilentlyContinue
 
-            Write-Output "Moving new files..."
+            Write-Output "Moving new build files into IIS..."
             Move-Item -Path "$tempPath\*" -Destination "$iisPath" -Force
 
             Write-Output "Cleaning temp folder..."
             Remove-Item -Path $tempPath -Recurse -Force -ErrorAction SilentlyContinue
 
-            Write-Output "✅ IIS Deployment Complete"
+            Write-Output "✅ IIS Deployment Completed Successfully!"
 
+      # ================================
+      # 3) Confirm Deployed Files
+      # ================================
       - name: Confirm deployed files
-        uses: appleboy/ssh-action@master
+        uses: appleboy/ssh-action@v1
         with:
           host: ${{ secrets.EC2_HOST }}
           username: ${{ secrets.EC2_USERNAME }}
-          key: ${{ secrets.EC2_SSH_KEY }}
+          password: ${{ secrets.EC2_PASSWORD }}
           port: ${{ secrets.EC2_PORT }}
           script: |
             $iisPath = "C:\inetpub\wwwroot\pro"
