@@ -69,8 +69,9 @@ jobs:
           username: ${{ secrets.EC2_USERNAME }}
           password: ${{ secrets.EC2_PASSWORD }}
           port: ${{ secrets.EC2_PORT }}
-          source: "dist/*"
+          source: "dist"
           target: "C:/inetpub/wwwroot/jagadesh.info"
+          strip_components: 1
 
       # -------------------------------
       # 7. Confirm deployment
