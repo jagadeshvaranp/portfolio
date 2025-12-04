@@ -83,4 +83,4 @@ jobs:
           password: ${{ secrets.EC2_PASSWORD }}
           port: ${{ secrets.EC2_PORT }}
           script: |
-            powershell -Command "& { $ErrorActionPreference = 'Stop'; $iisPath = 'C:\inetpub\wwwroot\jagadesh.info'; Write-Output \"Files in $iisPath:\"; Get-ChildItem -Path $iisPath -Recurse | Select-Object FullName,Length }"
+            powershell -Command "& { $ErrorActionPreference = 'Stop'; $iisPath = 'C:\inetpub\wwwroot\jagadesh.info'; Write-Output \"Files in ${iisPath}:\"; Get-ChildItem -Path $iisPath -Recurse | Select-Object FullName,Length }"
