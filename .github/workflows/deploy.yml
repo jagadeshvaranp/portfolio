@@ -47,7 +47,22 @@ jobs:
           ls -la dist || echo "❌ dist not found"
 
       # -------------------------------
-      # 5. Upload build folder to EC2
+      # 5. Prepare temp folder on EC2
+      # -------------------------------
+      - name: Ensure temp folder exists
+        uses: appleboy/ssh-action@v1
+        with:
+          host: ${{ secrets.EC2_HOST }}
+          username: ${{ secrets.EC2_USERNAME }}
+          password: ${{ secrets.EC2_PASSWORD }}
+          port: ${{ secrets.EC2_PORT }}
+          script: |
+            $ErrorActionPreference = "Stop"
+            New-Item -Path "C:\Users\Administrator\Desktop\temp_build" -ItemType Directory -Force | Out-Null
+            Write-Output "✅ Temp folder ready"
+
+      # -------------------------------
+      # 6. Upload build folder to EC2
       # -------------------------------
       - name: Copy dist to EC2 temp folder
         uses: appleboy/scp-action@v1
@@ -58,10 +73,9 @@ jobs:
           port: ${{ secrets.EC2_PORT }}
           source: "dist/*"
           target: "C:/Users/Administrator/Desktop/temp_build"
-          strip_components: 1
 
       # -------------------------------
-      # 6. Deploy to IIS (move files)
+      # 7. Deploy to IIS (move files)
       # -------------------------------
       - name: Deploy to IIS
         uses: appleboy/ssh-action@v1
@@ -71,7 +85,8 @@ jobs:
           password: ${{ secrets.EC2_PASSWORD }}
           port: ${{ secrets.EC2_PORT }}
           script: |
-            $iisPath = "C:\inetpub\wwwroot\pro"
+            $ErrorActionPreference = "Stop"
+            $iisPath = "C:\inetpub\wwwroot\jagadesh.info"
             $tempPath = "C:\Users\Administrator\Desktop\temp_build"
 
             Write-Output "▶ Creating IIS site folder if missing..."
@@ -91,7 +106,7 @@ jobs:
             Write-Output "✅ Deployment Completed Successfully!"
 
       # -------------------------------
-      # 7. Confirm deployment
+      # 8. Confirm deployment
       # -------------------------------
       - name: Confirm deployed files
         uses: appleboy/ssh-action@v1
@@ -101,6 +116,7 @@ jobs:
           password: ${{ secrets.EC2_PASSWORD }}
           port: ${{ secrets.EC2_PORT }}
           script: |
-            $iisPath = "C:\inetpub\wwwroot\pro"
+            $ErrorActionPreference = "Stop"
+            $iisPath = "C:\inetpub\wwwroot\jagadesh.info"
             Write-Output "Files in $iisPath:"
             Get-ChildItem -Path $iisPath -Recurse | Select-Object FullName,Length
