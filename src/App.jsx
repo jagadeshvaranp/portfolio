@@ -312,7 +312,7 @@ const App = () => {
       {/* Contact Section */}
       <section id="contact" className="relative py-24 max-w-2xl mx-auto px-4 text-center">
         <p className="text-purple-400 font-mono mb-4">04. What's Next?</p>
-        <h2 className="text-4xl md:text-5xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-white to-slate-300 mb-6">Get In Touch</h2>
+        <h2 className="text-4xl md:text-5xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-white to-slate-300 mb-6">Get In Touch!</h2>
         <p className="text-slate-300 text-lg mb-12 leading-relaxed">
           I am currently looking for full-time opportunities as a MERN Stack Developer. 
           Whether you have a question or just want to say hi, my inbox is always open!
