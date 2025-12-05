@@ -32,7 +32,7 @@ const Portfolio = () => {
   }, [isDark]);
 
   const personalInfo = {
-    name: "Jagadeshvaran P",
+    name: "Jagadeshvaran",
     role: "MERN Stack Developer",
     email: "jagadesperumal@gmail.com",
     phone: "+91 6374562170",
