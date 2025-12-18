@@ -16,7 +16,7 @@ jobs:
         uses: actions/checkout@v4
 
       # -------------------------------
-      # 2. Setup Node
+      # 2. Setup Node.js
       # -------------------------------
       - name: Setup Node.js
         uses: actions/setup-node@v4
@@ -38,50 +38,75 @@ jobs:
           VITE_API_BASE_URL: ${{ secrets.VITE_API_BASE_URL }}
         run: npm run build
 
-      # Debug build folder
-      - name: Debug build folder
+      # -------------------------------
+      # 5. Add IIS React routing config
+      # -------------------------------
+      - name: Add web.config for IIS
         run: |
-          echo "==== project files ===="
-          ls -la
-          echo "==== dist ===="
-          ls -la dist || echo "❌ dist not found"
+          cat <<EOF > dist/web.config
+          <?xml version="1.0" encoding="UTF-8"?>
+          <configuration>
+            <system.webServer>
+              <rewrite>
+                <rules>
+                  <rule name="React Routes" stopProcessing="true">
+                    <match url=".*" />
+                    <conditions logicalGrouping="MatchAll">
+                      <add input="{REQUEST_FILENAME}" matchType="IsFile" negate="true" />
+                      <add input="{REQUEST_FILENAME}" matchType="IsDirectory" negate="true" />
+                    </conditions>
+                    <action type="Rewrite" url="/index.html" />
+                  </rule>
+                </rules>
+              </rewrite>
+            </system.webServer>
+          </configuration>
+          EOF
 
       # -------------------------------
-      # 5. Prepare IIS folder (clear old files)
+      # 6. Clear old IIS files
       # -------------------------------
       - name: Clear old files from IIS
         uses: appleboy/ssh-action@v1
         with:
           host: ${{ secrets.EC2_HOST }}
           username: ${{ secrets.EC2_USERNAME }}
-          password: ${{ secrets.EC2_PASSWORD }}
-          port: ${{ secrets.EC2_PORT }}
+          key: ${{ secrets.EC2_SSH_KEY }}
+          port: 22
           script: |
-            powershell -Command "& { $ErrorActionPreference = 'Stop'; $iisPath = 'C:\inetpub\wwwroot\jagadesh.info'; Write-Output '▶ Creating IIS site folder if missing...'; if (-not (Test-Path -Path $iisPath)) { New-Item -Path $iisPath -ItemType Directory -Force | Out-Null }; Write-Output '▶ Clearing old files...'; Remove-Item -Path \"$iisPath\*\" -Recurse -Force -ErrorAction SilentlyContinue; Write-Output '✅ IIS folder ready for deployment' }"
+            powershell -Command "
+            \$iisPath = 'C:\inetpub\wwwroot\jagadesh.info';
+            if (-not (Test-Path \$iisPath)) {
+              New-Item -Path \$iisPath -ItemType Directory -Force
+            }
+            Remove-Item -Path \"\$iisPath\*\" -Recurse -Force -ErrorAction SilentlyContinue
+            "
 
       # -------------------------------
-      # 6. Upload build directly to IIS
+      # 7. Upload build to IIS
       # -------------------------------
       - name: Deploy to IIS folder
         uses: appleboy/scp-action@v1
         with:
           host: ${{ secrets.EC2_HOST }}
           username: ${{ secrets.EC2_USERNAME }}
-          password: ${{ secrets.EC2_PASSWORD }}
-          port: ${{ secrets.EC2_PORT }}
-          source: "dist"
-          target: "C:/inetpub/wwwroot/jagadesh.info"
-          strip_components: 1
+          key: ${{ secrets.EC2_SSH_KEY }}
+          port: 22
+          source: "dist/*"
+          target: "/C:/inetpub/wwwroot/jagadesh.info"
 
       # -------------------------------
-      # 7. Confirm deployment
+      # 8. Confirm deployment
       # -------------------------------
       - name: Confirm deployed files
         uses: appleboy/ssh-action@v1
         with:
           host: ${{ secrets.EC2_HOST }}
           username: ${{ secrets.EC2_USERNAME }}
-          password: ${{ secrets.EC2_PASSWORD }}
-          port: ${{ secrets.EC2_PORT }}
+          key: ${{ secrets.EC2_SSH_KEY }}
+          port: 22
           script: |
-            powershell -Command "& { $ErrorActionPreference = 'Stop'; $iisPath = 'C:\inetpub\wwwroot\jagadesh.info'; Write-Output \"Files in ${iisPath}:\"; Get-ChildItem -Path $iisPath -Recurse | Select-Object FullName,Length }"
+            powershell -Command "
+            Get-ChildItem 'C:\inetpub\wwwroot\jagadesh.info' -Recurse |
+            Select-Object FullName, Length
+            "
