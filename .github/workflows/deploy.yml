@@ -12,62 +12,47 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v4
 
-      - name: Setup Node.js
+      - name: Setup Node
         uses: actions/setup-node@v4
         with:
           node-version: 20
-          cache: "npm"
 
       - name: Install dependencies
         run: npm ci
 
-      - name: Build Vite app
-        env:
-          VITE_API_BASE_URL: ${{ secrets.VITE_API_BASE_URL }}
+      - name: Build app
         run: npm run build
 
-      - name: Add web.config for IIS
+      # -------------------------------
+      # WRITE SSH KEY TO FILE
+      # -------------------------------
+      - name: Setup SSH key
         run: |
-          cat <<EOF > dist/web.config
-          <?xml version="1.0" encoding="UTF-8"?>
-          <configuration>
-            <system.webServer>
-              <rewrite>
-                <rules>
-                  <rule name="React Routes" stopProcessing="true">
-                    <match url=".*" />
-                    <conditions logicalGrouping="MatchAll">
-                      <add input="{REQUEST_FILENAME}" matchType="IsFile" negate="true" />
-                      <add input="{REQUEST_FILENAME}" matchType="IsDirectory" negate="true" />
-                    </conditions>
-                    <action type="Rewrite" url="/index.html" />
-                  </rule>
-                </rules>
-              </rewrite>
-            </system.webServer>
-          </configuration>
-          EOF
+          mkdir -p ~/.ssh
+          echo "${{ secrets.EC2_SSH_KEY }}" > ~/.ssh/id_rsa
+          chmod 600 ~/.ssh/id_rsa
 
+      # -------------------------------
+      # TEST SSH CONNECTION
+      # -------------------------------
+      - name: Test SSH connection
+        run: |
+          ssh -o StrictHostKeyChecking=no \
+          ${{ secrets.EC2_USERNAME }}@${{ secrets.EC2_HOST }} "echo CONNECTED"
+
+      # -------------------------------
+      # CLEAR IIS FOLDER
+      # -------------------------------
       - name: Clear IIS folder
-        uses: appleboy/ssh-action@v1
-        with:
-          host: ${{ secrets.EC2_HOST }}
-          username: ${{ secrets.EC2_USERNAME }}
-          key: ${{ secrets.EC2_SSH_KEY }}
-          port: 22
-          script: |
-            powershell -Command "
-            \$path='C:\inetpub\wwwroot\jagadesh.info';
-            if (!(Test-Path \$path)) { New-Item \$path -ItemType Directory }
-            Remove-Item \"\$path\*\" -Recurse -Force -ErrorAction SilentlyContinue
-            "
+        run: |
+          ssh -o StrictHostKeyChecking=no \
+          ${{ secrets.EC2_USERNAME }}@${{ secrets.EC2_HOST }} \
+          "powershell -Command \"Remove-Item 'C:\inetpub\wwwroot\jagadesh.info\*' -Recurse -Force -ErrorAction SilentlyContinue\""
 
-      - name: Upload files to IIS
-        uses: appleboy/scp-action@v1
-        with:
-          host: ${{ secrets.EC2_HOST }}
-          username: ${{ secrets.EC2_USERNAME }}
-          key: ${{ secrets.EC2_SSH_KEY }}
-          port: 22
-          source: "dist/*"
-          target: "/C:/inetpub/wwwroot/jagadesh.info"
+      # -------------------------------
+      # COPY FILES TO IIS
+      # -------------------------------
+      - name: Upload files
+        run: |
+          scp -r -o StrictHostKeyChecking=no dist/* \
+          ${{ secrets.EC2_USERNAME }}@${{ secrets.EC2_HOST }}:/C:/inetpub/wwwroot/jagadesh.info
