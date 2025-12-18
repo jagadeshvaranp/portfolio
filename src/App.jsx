@@ -58,7 +58,7 @@ const Portfolio = () => {
     },
     {
       title: "TaskLoop - AI-Powered Workflow",
-      tech: "React + Node.js + Socket.io + MySQL",
+      tech: "React + Node.js + Socket.io + MySQL  ",
       description: "Full-stack SaaS platform with Kanban boards, AI task prioritization, team analytics, and Slack integration. Served 500+ active users with 99.9% uptime.",
       live: "https://taskloop.app",
       code: "https://github.com/jagadeshvaranp/taskloop"
