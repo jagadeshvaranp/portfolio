@@ -1,58 +1,88 @@
 name: Deploy Vite React to Windows IIS
 
 on:
-  push:
-    branches: ["main"]
+push:
+branches: ["main"]
 
 jobs:
-  deploy:
-    runs-on: ubuntu-latest
+deploy:
+runs-on: ubuntu-latest
 
-    steps:
-      - name: Checkout repository
-        uses: actions/checkout@v4
+steps:
+# -------------------------------
+# 1. Checkout Code
+# -------------------------------
+- name: Checkout repository
+uses: actions/checkout@v4
 
-      - name: Setup Node
-        uses: actions/setup-node@v4
-        with:
-          node-version: 20
+# -------------------------------
+# 2. Setup Node
+# -------------------------------
+- name: Setup Node.js
+uses: actions/setup-node@v4
+with:
+node-version: 20
+cache: "npm"
 
-      - name: Install dependencies
-        run: npm ci
+# -------------------------------
+# 3. Install dependencies
+# -------------------------------
+- name: Install dependencies
+run: npm ci
 
-      - name: Build app
-        run: npm run build
+# -------------------------------
+# 4. Build Vite React App
+# -------------------------------
+- name: Build Vite app
+env:
+VITE_API_BASE_URL: ${{ secrets.VITE_API_BASE_URL }}
+run: npm run build
 
-      # -------------------------------
-      # WRITE SSH KEY TO FILE
-      # -------------------------------
-      - name: Setup SSH key
-        run: |
-          mkdir -p ~/.ssh
-          echo "${{ secrets.EC2_SSH_KEY }}" > ~/.ssh/id_rsa
-          chmod 600 ~/.ssh/id_rsa
+# Debug build folder
+- name: Debug build folder
+run: |
+         echo "==== project files ===="
+         ls -la
+         echo "==== dist ===="
+         ls -la dist || echo "❌ dist not found"
 
-      # -------------------------------
-      # TEST SSH CONNECTION
-      # -------------------------------
-      - name: Test SSH connection
-        run: |
-          ssh -o StrictHostKeyChecking=no \
-          ${{ secrets.EC2_USERNAME }}@${{ secrets.EC2_HOST }} "echo CONNECTED"
+     # -------------------------------
+# 5. Prepare IIS folder (clear old files)
+# -------------------------------
+- name: Clear old files from IIS
+uses: appleboy/ssh-action@v1
+with:
+host: ${{ secrets.EC2_HOST }}
+username: ${{ secrets.EC2_USERNAME }}
+password: ${{ secrets.EC2_PASSWORD }}
+port: ${{ secrets.EC2_PORT }}
+script: |
+           powershell -Command "& { $ErrorActionPreference = 'Stop'; $iisPath = 'C:\inetpub\wwwroot\jagadesh.info'; Write-Output '▶ Creating IIS site folder if missing...'; if (-not (Test-Path -Path $iisPath)) { New-Item -Path $iisPath -ItemType Directory -Force | Out-Null }; Write-Output '▶ Clearing old files...'; Remove-Item -Path \"$iisPath\*\" -Recurse -Force -ErrorAction SilentlyContinue; Write-Output '✅ IIS folder ready for deployment' }"
 
-      # -------------------------------
-      # CLEAR IIS FOLDER
-      # -------------------------------
-      - name: Clear IIS folder
-        run: |
-          ssh -o StrictHostKeyChecking=no \
-          ${{ secrets.EC2_USERNAME }}@${{ secrets.EC2_HOST }} \
-          "powershell -Command \"Remove-Item 'C:\inetpub\wwwroot\jagadesh.info\*' -Recurse -Force -ErrorAction SilentlyContinue\""
+     # -------------------------------
+# 6. Upload build directly to IIS
+# -------------------------------
+- name: Deploy to IIS folder
+uses: appleboy/scp-action@v1
+with:
+host: ${{ secrets.EC2_HOST }}
+username: ${{ secrets.EC2_USERNAME }}
+password: ${{ secrets.EC2_PASSWORD }}
+port: ${{ secrets.EC2_PORT }}
+          source: "dist/*"
+          source: "dist"
+target: "C:/inetpub/wwwroot/jagadesh.info"
+          strip_components: 1
 
-      # -------------------------------
-      # COPY FILES TO IIS
-      # -------------------------------
-      - name: Upload files
-        run: |
-          scp -r -o StrictHostKeyChecking=no dist/* \
-          ${{ secrets.EC2_USERNAME }}@${{ secrets.EC2_HOST }}:/C:/inetpub/wwwroot/jagadesh.info
+# -------------------------------
+# 7. Confirm deployment
+# -------------------------------
+- name: Confirm deployed files
+uses: appleboy/ssh-action@v1
+with:
+host: ${{ secrets.EC2_HOST }}
+username: ${{ secrets.EC2_USERNAME }}
+password: ${{ secrets.EC2_PASSWORD }}
+port: ${{ secrets.EC2_PORT }}
+script: |
+           powershell -Command "& { $ErrorActionPreference = 'Stop'; $iisPath = 'C:\inetpub\wwwroot\jagadesh.info'; Write-Output \"Files in ${iisPath}:\"; Get-ChildItem -Path $iisPath -Recurse | Select-Object FullName,Length }"
