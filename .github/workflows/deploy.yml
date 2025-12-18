@@ -9,38 +9,23 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      # -------------------------------
-      # 1. Checkout Code
-      # -------------------------------
       - name: Checkout repository
         uses: actions/checkout@v4
 
-      # -------------------------------
-      # 2. Setup Node.js
-      # -------------------------------
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
           node-version: 20
           cache: "npm"
 
-      # -------------------------------
-      # 3. Install dependencies
-      # -------------------------------
       - name: Install dependencies
         run: npm ci
 
-      # -------------------------------
-      # 4. Build Vite React App
-      # -------------------------------
       - name: Build Vite app
         env:
           VITE_API_BASE_URL: ${{ secrets.VITE_API_BASE_URL }}
         run: npm run build
 
-      # -------------------------------
-      # 5. Add IIS React routing config
-      # -------------------------------
       - name: Add web.config for IIS
         run: |
           cat <<EOF > dist/web.config
@@ -63,10 +48,7 @@ jobs:
           </configuration>
           EOF
 
-      # -------------------------------
-      # 6. Clear old IIS files
-      # -------------------------------
-      - name: Clear old files from IIS
+      - name: Clear IIS folder
         uses: appleboy/ssh-action@v1
         with:
           host: ${{ secrets.EC2_HOST }}
@@ -75,17 +57,12 @@ jobs:
           port: 22
           script: |
             powershell -Command "
-            \$iisPath = 'C:\inetpub\wwwroot\jagadesh.info';
-            if (-not (Test-Path \$iisPath)) {
-              New-Item -Path \$iisPath -ItemType Directory -Force
-            }
-            Remove-Item -Path \"\$iisPath\*\" -Recurse -Force -ErrorAction SilentlyContinue
+            \$path='C:\inetpub\wwwroot\jagadesh.info';
+            if (!(Test-Path \$path)) { New-Item \$path -ItemType Directory }
+            Remove-Item \"\$path\*\" -Recurse -Force -ErrorAction SilentlyContinue
             "
 
-      # -------------------------------
-      # 7. Upload build to IIS
-      # -------------------------------
-      - name: Deploy to IIS folder
+      - name: Upload files to IIS
         uses: appleboy/scp-action@v1
         with:
           host: ${{ secrets.EC2_HOST }}
@@ -94,19 +71,3 @@ jobs:
           port: 22
           source: "dist/*"
           target: "/C:/inetpub/wwwroot/jagadesh.info"
-
-      # -------------------------------
-      # 8. Confirm deployment
-      # -------------------------------
-      - name: Confirm deployed files
-        uses: appleboy/ssh-action@v1
-        with:
-          host: ${{ secrets.EC2_HOST }}
-          username: ${{ secrets.EC2_USERNAME }}
-          key: ${{ secrets.EC2_SSH_KEY }}
-          port: 22
-          script: |
-            powershell -Command "
-            Get-ChildItem 'C:\inetpub\wwwroot\jagadesh.info' -Recurse |
-            Select-Object FullName, Length
-            "
