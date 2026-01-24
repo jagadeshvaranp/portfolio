@@ -150,7 +150,7 @@ const Portfolio = () => {
                   J
                 </div>
                 <span className="text-2xl font-bold bg-gradient-to-r from-indigo-600 to-purple-600 bg-clip-text text-transparent">
-                  jagadesh.info
+                  jagadesh
                 </span>
               </div>
 
