@@ -86,7 +86,7 @@ const Portfolio = () => {
 
   const experience = [
     {
-      company: "QSpiders",
+      company: "JSpiders",
       role: "MERN Stack Developer Intern",
       duration: "Jun 2025 - Dec 2025",
       description:
@@ -97,9 +97,9 @@ const Portfolio = () => {
   const education = [
     {
       degree: "B.E. Computer Science & Engineering",
-      institution: "Paavai Engineering College",
+
       duration: "2021 - 2025",
-      grade: "6.9 CGPA",
+
       // description: "Studied web technologies, database management systems, and core computer science principles, with hands-on exposure to software development."
     },
   ];
@@ -422,6 +422,7 @@ const Portfolio = () => {
 
             {/* Education Column */}
             <div>
+              {/* Header Section */}
               <div className="flex items-center gap-4 mb-12">
                 <div className="p-3 bg-purple-100 dark:bg-purple-900/30 rounded-full text-purple-600 dark:text-purple-400">
                   <GraduationCap size={32} />
@@ -430,28 +431,36 @@ const Portfolio = () => {
                   Education
                 </h2>
               </div>
+
+              {/* Timeline List */}
               <div className="space-y-8">
-                {education.map((edu, i) => (
+                {education?.map((edu, i) => (
                   <div
-                    key={i}
-                    className="relative pl-8 border-l-2 border-purple-200 dark:border-purple-900/50 space-y-2"
+                    key={edu.id || i} // Better to use a unique ID if available
+                    className="relative pl-8 border-l-2 border-purple-200 dark:border-purple-900/50"
                   >
+                    {/* Timeline Dot */}
                     <div className="absolute -left-[9px] top-0 w-4 h-4 rounded-full bg-purple-600 ring-4 ring-white dark:ring-slate-900" />
-                    <div className="bg-white dark:bg-slate-800 p-6 rounded-2xl shadow-lg border border-slate-100 dark:border-slate-700 hover:shadow-xl transition-shadow">
+
+                    {/* Card Content */}
+                    <div className="bg-white dark:bg-slate-800 p-6 rounded-2xl shadow-lg border border-slate-100 dark:border-slate-700 hover:shadow-xl transition-shadow space-y-2">
                       <h3 className="text-xl font-bold text-slate-800 dark:text-slate-100">
                         {edu.degree}
                       </h3>
+
                       <div className="flex justify-between items-center mt-2 mb-4 text-sm font-semibold text-purple-600 dark:text-purple-400">
                         <span>{edu.institution}</span>
                         <span className="bg-purple-50 dark:bg-purple-900/30 px-3 py-1 rounded-full text-xs">
                           {edu.duration}
                         </span>
                       </div>
+
                       {edu.grade && (
                         <div className="mb-3 inline-block px-3 py-1 bg-green-100 dark:bg-green-900/30 text-green-700 dark:text-green-300 text-xs font-bold rounded-md">
                           {edu.grade}
                         </div>
                       )}
+
                       <p className="text-slate-600 dark:text-slate-400 leading-relaxed text-sm">
                         {edu.description}
                       </p>
