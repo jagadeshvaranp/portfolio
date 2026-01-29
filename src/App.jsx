@@ -84,15 +84,16 @@ const Portfolio = () => {
     },
   ];
 
-  const experience = [
-    {
-      company: "JSpiders",
-      role: "MERN Stack Developer Intern",
-      duration: "Jun 2025 - Dec 2025",
-      description:
-        "Trained extensively in the MERN stack while developing CRUD-based full-stack web applications, authentication systems, and RESTful APIs. Strengthened proficiency in JavaScript, Git/GitHub, and Postman. Gained hands-on experience with database design and AWS EC2 deployment.",
-    },
-  ];
+const experience = [
+  {
+    company: "JSpiders",
+    role: "MERN Stack Developer Intern",
+    duration: "Jun 2025 - Dec 2025",
+    description:
+      "Successfully completed a MERN Stack internship with hands-on experience in building full-stack web applications. Worked on CRUD operations, user authentication, and RESTful API development. Improved skills in JavaScript, MongoDB, Express.js, React.js, Git/GitHub, and Postman, with practical exposure to database design and AWS EC2 deployment.",
+  },
+];
+
 
   const education = [
     {
