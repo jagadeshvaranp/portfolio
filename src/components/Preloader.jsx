@@ -36,7 +36,7 @@ const Preloader = () => {
               animate={{ clipPath: 'inset(0% 0 0 0)' }}
               transition={{ duration: 1.6, ease: "easeInOut", delay: 0.2 }}
             >
-              Jagadeshvaran<span className="text-black">.</span>
+              Jagadeshvaran
             </motion.div>
           </motion.div>
         </motion.div>
