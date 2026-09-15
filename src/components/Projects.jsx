@@ -11,17 +11,42 @@ import {
   ArrowUpRight,
   ShoppingBag,
   Palette,
-  Workflow
+  Workflow,
+  Terminal,
+  Code2
 } from 'lucide-react';
 
 import frenchClubImg from '../assets/projects/french_club.png';
 import maisondorImg from '../assets/projects/maisondor.png';
 import jeevisImg from '../assets/projects/jeevis_creations.png';
 import taskloopImg from '../assets/projects/taskloop.png';
+import egoisteImg from '../assets/projects/egoiste.png';
 
 const projects = [
   {
     id: 1,
+    title: "Egoiste",
+    subtitle: "Luxury Menswear & Timeless Classics",
+    category: "client",
+    categoryLabel: "Flagship E-Commerce",
+    typeIcon: ShoppingBag,
+    image: egoisteImg,
+    domain: "new-dres-shop.vercel.app",
+    demo: "https://new-dres-shop.vercel.app/",
+    github: "https://github.com",
+    badge: "Featured Flagship Demo",
+    badgeColor: "bg-emerald-500/10 text-emerald-400 border-emerald-500/30",
+    description: "An editorial-grade luxury menswear web store inspired by European tailoring and country club heritage. Features curated seasonal lookbooks, a stateful slide-over shopping bag, quick-view customization modals, and smooth dark/light theme dynamics.",
+    highlights: [
+      "Stateful cart drawer architecture backed by persistent storage with dynamic pricing & item management.",
+      "Interactive product quick-view modal with real-time color swatches, size selectors, and fabric specifications.",
+      "Multi-collection filtering across Court & Country, Heritage Tailoring, and The Clubhouse Edit.",
+      "Editorial aesthetics with Cormorant Garamond typography, 60fps micro-interactions, and fluid theme switching."
+    ],
+    techTags: ["React.js", "Tailwind CSS", "Framer Motion", "Lucide Icons", "Vite", "Vercel"]
+  },
+  {
+    id: 2,
     title: "French Club",
     subtitle: "Premium Streetwear & Menswear Platform",
     category: "client",
@@ -32,7 +57,7 @@ const projects = [
     demo: "https://french-club-neon.vercel.app/",
     github: "https://github.com",
     badge: "Live Client Work",
-    badgeColor: "bg-red-500/10 text-red-400 border-red-500/30",
+    badgeColor: "bg-[#FF2A2A]/10 text-[#FF2A2A] border-[#FF2A2A]/30",
     description: "A high-conversion e-commerce brand store engineered for a premier menswear & streetwear label in Namakkal. Designed with a sleek dark aesthetic, dynamic product catalogs, size/fit selectors, and an interactive shopping bag workflow.",
     highlights: [
       "Custom MERN stack foundation with optimized MongoDB product aggregations for instant category filtering.",
@@ -43,7 +68,7 @@ const projects = [
     techTags: ["MongoDB", "Express.js", "React.js", "Node.js", "Tailwind CSS", "Framer Motion", "Vercel"]
   },
   {
-    id: 2,
+    id: 3,
     title: "MAISON D'OR",
     subtitle: "Haute Couture & Luxury Bridal Boutique",
     category: "client",
@@ -65,7 +90,7 @@ const projects = [
     techTags: ["React.js", "Tailwind CSS", "Framer Motion", "Lucide Icons", "Vite", "Vercel"]
   },
   {
-    id: 3,
+    id: 4,
     title: "Jeevi's Creations",
     subtitle: "Bridal Saree Pre-Pleating & Mehndi Studio",
     category: "client",
@@ -87,7 +112,7 @@ const projects = [
     techTags: ["React.js", "Tailwind CSS", "Modern UI/UX", "Lucide Icons", "Vercel"]
   },
   {
-    id: 4,
+    id: 5,
     title: "TaskLoop",
     subtitle: "Enterprise Workflow & Task Management",
     category: "fullstack",
@@ -111,9 +136,9 @@ const projects = [
 ];
 
 const categories = [
-  { key: "all", label: "All Projects" },
-  { key: "client", label: "Client Work" },
-  { key: "fullstack", label: "Full Stack MERN" }
+  { key: "all", label: "ALL WORK" },
+  { key: "client", label: "CLIENT DEPLOYMENTS" },
+  { key: "fullstack", label: "FULL STACK MERN" }
 ];
 
 const Projects = () => {
@@ -126,63 +151,65 @@ const Projects = () => {
   return (
     <section 
       id="projects" 
-      className="bg-[#0c0c0c] text-white pt-28 pb-36 px-4 sm:px-6 md:px-12 w-full relative overflow-hidden font-sans border-t border-gray-900 bg-[linear-gradient(to_right,#ffffff05_1px,transparent_1px),linear-gradient(to_bottom,#ffffff05_1px,transparent_1px)] bg-[size:60px_60px]"
+      className="bg-[#050505] text-white pt-28 pb-36 px-4 sm:px-6 md:px-12 w-full relative overflow-hidden border-t border-[#27272A] bg-tech-grid"
     >
-      {/* Decorative Glow Ambient Circles */}
-      <div className="absolute top-1/4 -left-20 w-[500px] h-[500px] bg-red-600/10 rounded-full blur-[140px] pointer-events-none z-0" />
-      <div className="absolute bottom-1/3 -right-20 w-[500px] h-[500px] bg-red-900/10 rounded-full blur-[140px] pointer-events-none z-0" />
-      <div className="absolute top-2/3 left-1/2 -translate-x-1/2 w-[600px] h-[300px] bg-amber-600/5 rounded-full blur-[160px] pointer-events-none z-0" />
+      {/* Huge Background Watermark: WORK */}
+      <div className="absolute top-12 left-1/2 -translate-x-1/2 w-full flex justify-center pointer-events-none select-none z-0">
+        <span className="font-bebas text-[22vw] leading-none text-white/[0.03] uppercase tracking-tighter">
+          WORK
+        </span>
+      </div>
 
       <div className="max-w-7xl mx-auto relative z-10 flex flex-col items-center">
         
         {/* Header Title Section */}
-        <div data-aos="fade-up" className="w-full max-w-3xl text-center mb-12">
-          <div className="inline-flex items-center gap-2 border border-red-500/20 rounded-full px-4 py-1.5 text-xs text-red-400 font-mono tracking-widest uppercase mb-6 bg-red-500/5 backdrop-blur-md shadow-[0_0_15px_rgba(255,42,42,0.1)]">
-            <Sparkles className="w-3.5 h-3.5 text-red-500 animate-pulse" />
-            <span>Client Work & Deployments</span>
+        <div className="w-full max-w-3xl text-center mb-12">
+          <div className="inline-flex items-center gap-2 border border-[#FF2A2A]/30 rounded-full px-4 py-1.5 text-xs text-[#FF2A2A] font-mono tracking-widest uppercase mb-6 bg-[#FF2A2A]/5 backdrop-blur-md shadow-[0_0_15px_rgba(255,42,42,0.1)]">
+            <span className="w-2 h-2 rounded-full bg-[#FF2A2A] animate-pulse" />
+            <span>// 03. SELECTED CLIENT & FULL-STACK WORK</span>
           </div>
 
-          <h2 className="text-3xl sm:text-4xl md:text-6xl font-black tracking-tight mb-5 text-white">
-            Featured <span className="text-transparent bg-clip-text bg-gradient-to-r from-[#ff2a2a] via-[#ff6b6b] to-white">Creations</span> & Projects
+          <h2 className="font-space text-3xl sm:text-5xl md:text-6xl font-bold tracking-tight mb-5 text-white">
+            Featured <span className="text-[#FF2A2A]">Projects</span>.
           </h2>
           
-          <p className="text-gray-400 text-sm md:text-base font-medium max-w-2xl mx-auto leading-relaxed">
-            Real-world client solutions, full-stack MERN architectures, and high-performance web applications built with precision engineering and modern UX.
+          <p className="font-inter text-[#A1A1AA] text-sm md:text-base font-normal max-w-2xl mx-auto leading-relaxed">
+            Real-world client web applications, e-commerce brand platforms, and robust MERN stack architectures engineered for scale and speed.
           </p>
 
           {/* Quick Metrics Pills */}
           <div className="flex flex-wrap items-center justify-center gap-3 sm:gap-4 mt-8">
-            <div className="flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-white/[0.03] border border-white/10 text-xs text-gray-300 font-mono">
-              <span className="w-2 h-2 rounded-full bg-emerald-500 animate-ping" />
-              <span>3+ Active Client Deployments</span>
+            <div className="flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-[#111111] border border-[#27272A] text-xs text-[#A1A1AA] font-mono">
+              <span className="w-2 h-2 rounded-full bg-emerald-400 animate-ping" />
+              <span className="text-white font-medium">4+ Live Work & Demos</span>
             </div>
-            <div className="flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-white/[0.03] border border-white/10 text-xs text-gray-300 font-mono">
-              <span className="w-2 h-2 rounded-full bg-red-500" />
-              <span>Full Stack MERN</span>
+            <div className="flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-[#111111] border border-[#27272A] text-xs text-[#A1A1AA] font-mono">
+              <span className="w-2 h-2 rounded-full bg-[#FF2A2A]" />
+              <span className="text-white font-medium">Full Stack MERN Architecture</span>
             </div>
-            <div className="flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-white/[0.03] border border-white/10 text-xs text-gray-300 font-mono">
-              <span className="w-2 h-2 rounded-full bg-amber-500" />
-              <span>High-Performance 60fps UX</span>
+            <div className="flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-[#111111] border border-[#27272A] text-xs text-[#A1A1AA] font-mono">
+              <span className="w-2 h-2 rounded-full bg-amber-400" />
+              <span className="text-white font-medium">60fps Motion Design</span>
             </div>
           </div>
         </div>
 
         {/* Filter Tabs */}
-        <div data-aos="fade-up" data-aos-delay="100" className="flex items-center justify-center gap-2 p-1.5 rounded-2xl bg-black/60 border border-white/10 backdrop-blur-xl mb-14">
+        <div className="flex items-center justify-center gap-2 p-1.5 rounded-full bg-[#111111] border border-[#27272A] backdrop-blur-xl mb-14">
           {categories.map((tab) => {
             const isActive = activeTab === tab.key;
             return (
               <button
                 key={tab.key}
                 onClick={() => setActiveTab(tab.key)}
-                className={`relative px-5 py-2.5 rounded-xl text-xs md:text-sm font-semibold transition-all duration-300 cursor-pointer ${
-                  isActive ? "text-white" : "text-gray-400 hover:text-gray-200"
+                className={`relative px-5 py-2 rounded-full text-xs font-space font-bold tracking-wider uppercase transition-all duration-300 cursor-pointer ${
+                  isActive ? "text-white" : "text-[#71717A] hover:text-white"
                 }`}
               >
                 {isActive && (
                   <motion.div
                     layoutId="activeTabGlow"
-                    className="absolute inset-0 rounded-xl bg-gradient-to-r from-[#ff2a2a] to-[#cc1111] shadow-[0_0_20px_rgba(255,42,42,0.4)]"
+                    className="absolute inset-0 rounded-full bg-[#FF2A2A] shadow-[0_0_20px_rgba(255,42,42,0.4)]"
                     transition={{ type: "spring", stiffness: 380, damping: 30 }}
                   />
                 )}
@@ -209,33 +236,31 @@ const Projects = () => {
                   animate={{ opacity: 1, y: 0 }}
                   exit={{ opacity: 0, scale: 0.95 }}
                   transition={{ duration: 0.5, delay: idx * 0.1 }}
-                  className="group relative bg-[#111111]/90 border border-white/10 rounded-[1.75rem] md:rounded-[2rem] overflow-hidden flex flex-col justify-between hover:border-[#ff2a2a]/50 hover:bg-[#141414] transition-all duration-500 shadow-[0_15px_35px_rgba(0,0,0,0.4)] hover:shadow-[0_20px_50px_rgba(255,42,42,0.15)]"
+                  className="group relative bg-[#111111] border border-[#27272A] rounded-3xl overflow-hidden flex flex-col justify-between hover:border-[#FF2A2A]/50 hover:bg-[#141414] transition-all duration-500 shadow-[0_20px_40px_rgba(0,0,0,0.6)] hover:shadow-[0_25px_60px_rgba(255,42,42,0.15)]"
                 >
                   {/* Subtle Red Top-Glow Gradient */}
-                  <div className="absolute -top-24 left-1/2 -translate-x-1/2 w-64 h-32 bg-[#ff2a2a]/15 rounded-full blur-[70px] pointer-events-none group-hover:bg-[#ff2a2a]/25 transition-all duration-500" />
+                  <div className="absolute -top-24 left-1/2 -translate-x-1/2 w-64 h-32 bg-[#FF2A2A]/10 rounded-full blur-[70px] pointer-events-none group-hover:bg-[#FF2A2A]/20 transition-all duration-500" />
 
-                  {/* ─────────────────────────────────────────────────────────────
-                      UPPER SECTION: REAL WEBSITE BROWSER MOCKUP & LIVE PREVIEW
-                     ───────────────────────────────────────────────────────────── */}
+                  {/* Upper Section: Browser Window Frame */}
                   <div className="p-3 sm:p-4 pb-0">
-                    <div className="bg-[#080808] border border-white/10 rounded-2xl overflow-hidden shadow-inner group-hover:border-white/20 transition-colors duration-500">
+                    <div className="bg-[#050505] border border-[#27272A] rounded-2xl overflow-hidden group-hover:border-[#3F3F46] transition-colors duration-500">
                       
                       {/* Browser Window Header Bar */}
-                      <div className="px-4 py-3 bg-[#0d0d0d] border-b border-white/5 flex items-center justify-between gap-3 select-none">
+                      <div className="px-4 py-3 bg-[#0A0A0A] border-b border-[#27272A] flex items-center justify-between gap-3 select-none">
                         
                         {/* Traffic Lights (macOS dots) */}
                         <div className="flex items-center gap-2">
-                          <span className="w-3 h-3 rounded-full bg-[#ff5f56]/90 border border-[#e0443e]/40 shadow-sm" />
-                          <span className="w-3 h-3 rounded-full bg-[#ffbd2e]/90 border border-[#dea123]/40 shadow-sm" />
-                          <span className="w-3 h-3 rounded-full bg-[#27c93f]/90 border border-[#1aab29]/40 shadow-sm" />
+                          <span className="w-2.5 h-2.5 rounded-full bg-[#FF2A2A]/80 shadow-sm" />
+                          <span className="w-2.5 h-2.5 rounded-full bg-amber-400/80 shadow-sm" />
+                          <span className="w-2.5 h-2.5 rounded-full bg-emerald-400/80 shadow-sm" />
                         </div>
 
                         {/* URL Search Bar */}
-                        <div className="flex-1 max-w-[320px] mx-auto bg-black/60 border border-white/10 rounded-lg px-3 py-1 flex items-center justify-between text-[11px] text-gray-400 font-mono">
+                        <div className="flex-1 max-w-[320px] mx-auto bg-[#111111] border border-[#27272A] rounded-lg px-3 py-1 flex items-center justify-between text-[11px] font-mono">
                           <div className="flex items-center gap-1.5 truncate">
                             <Lock className="w-3 h-3 text-emerald-400 shrink-0" />
-                            <span className="text-gray-500 hidden sm:inline">https://</span>
-                            <span className="text-gray-200 truncate">{project.domain}</span>
+                            <span className="text-[#71717A] hidden sm:inline">https://</span>
+                            <span className="text-[#A1A1AA] truncate">{project.domain}</span>
                           </div>
                           <span className="flex items-center gap-1 text-[10px] text-emerald-400 font-bold tracking-wider uppercase shrink-0 pl-2">
                             <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse" />
@@ -249,14 +274,14 @@ const Projects = () => {
                           target="_blank" 
                           rel="noopener noreferrer"
                           title="Visit live website"
-                          className="w-7 h-7 rounded-lg bg-white/5 hover:bg-[#ff2a2a] flex items-center justify-center text-gray-400 hover:text-white transition-colors duration-300"
+                          className="w-7 h-7 rounded-lg bg-[#18181B] hover:bg-[#FF2A2A] flex items-center justify-center text-[#A1A1AA] hover:text-white transition-colors duration-300"
                         >
                           <ArrowUpRight className="w-4 h-4" />
                         </a>
                       </div>
 
                       {/* Interactive Website Preview Viewport */}
-                      <div className="relative h-52 sm:h-64 md:h-72 w-full overflow-hidden bg-black/80">
+                      <div className="relative h-56 sm:h-64 md:h-72 w-full overflow-hidden bg-black">
                         <img 
                           src={project.image} 
                           alt={`${project.title} live website screenshot`}
@@ -265,12 +290,12 @@ const Projects = () => {
                         />
 
                         {/* Overlay with Quick Action on Card Hover */}
-                        <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-center justify-center p-4">
+                        <div className="absolute inset-0 bg-gradient-to-t from-[#050505]/90 via-[#050505]/30 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-center justify-center p-4">
                           <a
                             href={project.demo}
                             target="_blank"
                             rel="noopener noreferrer"
-                            className="flex items-center gap-2 px-5 py-2.5 rounded-xl bg-red-600/90 text-white font-bold text-xs uppercase tracking-wider backdrop-blur-md shadow-[0_0_25px_rgba(255,42,42,0.6)] transform translate-y-3 group-hover:translate-y-0 transition-all duration-300 hover:bg-red-500 hover:scale-105"
+                            className="font-space flex items-center gap-2 px-6 py-3 rounded-full bg-[#FF2A2A] text-white font-bold text-xs uppercase tracking-wider backdrop-blur-md shadow-[0_0_25px_rgba(255,42,42,0.6)] transform translate-y-3 group-hover:translate-y-0 transition-all duration-300 hover:bg-white hover:text-black hover:scale-105"
                           >
                             <ExternalLink className="w-4 h-4" />
                             <span>Visit Live Website</span>
@@ -281,18 +306,16 @@ const Projects = () => {
                     </div>
                   </div>
 
-                  {/* ─────────────────────────────────────────────────────────────
-                      LOWER SECTION: PROJECT DETAILS, HIGHLIGHTS, TECH & ACTIONS
-                     ───────────────────────────────────────────────────────────── */}
+                  {/* Lower Section: Project Details, Highlights, Tech & Actions */}
                   <div className="p-6 sm:p-8 flex flex-col justify-between flex-1">
                     <div>
                       {/* Category Badge & Icon */}
                       <div className="flex items-center justify-between gap-3 mb-4">
                         <div className="flex items-center gap-2">
-                          <div className="w-8 h-8 rounded-xl bg-[#ff2a2a]/10 border border-[#ff2a2a]/20 flex items-center justify-center text-[#ff2a2a]">
-                            <TypeIcon className="w-4 h-4" />
+                          <div className="w-7 h-7 rounded-lg bg-[#FF2A2A]/10 border border-[#FF2A2A]/20 flex items-center justify-center text-[#FF2A2A]">
+                            <TypeIcon className="w-3.5 h-3.5" />
                           </div>
-                          <span className="text-xs font-mono font-bold tracking-wider text-gray-300 uppercase">
+                          <span className="text-xs font-mono font-bold tracking-wider text-[#A1A1AA] uppercase">
                             {project.categoryLabel}
                           </span>
                         </div>
@@ -303,29 +326,29 @@ const Projects = () => {
                       </div>
 
                       {/* Title & Subtitle */}
-                      <h3 className="text-2xl sm:text-3xl font-black tracking-tight text-white mb-1 group-hover:text-[#ff2a2a] transition-colors duration-300">
+                      <h3 className="font-space text-2xl sm:text-3xl font-bold tracking-tight text-white mb-1 group-hover:text-[#FF2A2A] transition-colors duration-300">
                         {project.title}
                       </h3>
                       
-                      <h4 className="text-xs font-bold uppercase tracking-widest text-[#ff2a2a]/80 mb-4 font-mono">
+                      <h4 className="text-xs font-mono font-semibold uppercase tracking-wider text-[#A1A1AA] mb-4">
                         {project.subtitle}
                       </h4>
 
                       {/* Description */}
-                      <p className="text-xs sm:text-sm text-gray-400 leading-relaxed mb-6 font-normal">
+                      <p className="font-inter text-xs sm:text-sm text-[#A1A1AA] leading-relaxed mb-6 font-normal">
                         {project.description}
                       </p>
 
                       {/* Key Features / Implementations */}
-                      <div className="mb-6 bg-black/40 border border-white/5 rounded-2xl p-4 sm:p-5">
-                        <h5 className="text-[11px] font-mono font-bold uppercase tracking-wider text-gray-300 mb-3 flex items-center gap-2">
-                          <CheckCircle2 className="w-3.5 h-3.5 text-[#ff2a2a]" />
+                      <div className="mb-6 bg-[#0A0A0A] border border-[#27272A] rounded-2xl p-4 sm:p-5">
+                        <h5 className="text-[11px] font-mono font-bold uppercase tracking-wider text-white mb-3 flex items-center gap-2">
+                          <CheckCircle2 className="w-3.5 h-3.5 text-[#FF2A2A]" />
                           Key Architectural Highlights
                         </h5>
                         <ul className="space-y-2.5 list-none">
                           {project.highlights.map((li, highlightIdx) => (
-                            <li key={highlightIdx} className="flex items-start gap-2.5 text-xs text-gray-400 leading-relaxed">
-                              <span className="w-1.5 h-1.5 rounded-full bg-[#ff2a2a] mt-1.5 shrink-0 shadow-[0_0_6px_#ff2a2a]" />
+                            <li key={highlightIdx} className="flex items-start gap-2.5 font-inter text-xs text-[#A1A1AA] leading-relaxed">
+                              <span className="w-1.5 h-1.5 rounded-full bg-[#FF2A2A] mt-1.5 shrink-0 shadow-[0_0_6px_#FF2A2A]" />
                               <span>{li}</span>
                             </li>
                           ))}
@@ -336,11 +359,11 @@ const Projects = () => {
                     {/* Tech Stack Tags & CTA Buttons */}
                     <div>
                       {/* Tech Pills */}
-                      <div className="flex flex-wrap gap-1.5 sm:gap-2 pt-4 border-t border-white/10 mb-6">
+                      <div className="flex flex-wrap gap-1.5 sm:gap-2 pt-4 border-t border-[#27272A] mb-6">
                         {project.techTags.map((tech, techIdx) => (
                           <span 
                             key={techIdx} 
-                            className="text-[10px] font-mono font-medium px-2.5 py-1 rounded-lg bg-white/[0.04] border border-white/10 text-gray-300 hover:border-gray-600 transition-colors"
+                            className="font-mono text-[10px] font-medium px-2.5 py-1 rounded-lg bg-[#18181B] border border-[#27272A] text-[#A1A1AA] hover:text-white hover:border-[#3F3F46] transition-colors"
                           >
                             {tech}
                           </span>
@@ -353,7 +376,7 @@ const Projects = () => {
                           href={project.demo}
                           target="_blank"
                           rel="noopener noreferrer"
-                          className="flex-1 flex items-center justify-center gap-2 py-3 rounded-xl text-xs font-bold uppercase tracking-wider bg-gradient-to-r from-[#ff2a2a] to-[#d61e1e] text-white hover:from-white hover:to-white hover:text-black shadow-[0_4px_20px_rgba(255,42,42,0.3)] hover:shadow-[0_6px_25px_rgba(255,255,255,0.4)] transition-all duration-300 cursor-pointer"
+                          className="font-space flex-1 flex items-center justify-center gap-2 py-3 rounded-xl text-xs font-bold uppercase tracking-wider bg-[#FF2A2A] hover:bg-white text-white hover:text-black shadow-[0_0_20px_rgba(255,42,42,0.3)] hover:shadow-[0_0_25px_rgba(255,255,255,0.4)] transition-all duration-300 cursor-pointer"
                         >
                           <ExternalLink className="w-4 h-4" />
                           <span>Live Demo</span>
@@ -363,7 +386,7 @@ const Projects = () => {
                           href={project.github}
                           target="_blank"
                           rel="noopener noreferrer"
-                          className="flex-1 flex items-center justify-center gap-2 py-3 rounded-xl border border-white/15 text-xs font-bold uppercase tracking-wider bg-white/[0.03] text-gray-300 hover:bg-white/10 hover:border-white/30 hover:text-white transition-all duration-300"
+                          className="font-space flex-1 flex items-center justify-center gap-2 py-3 rounded-xl border border-[#27272A] hover:border-white text-xs font-bold uppercase tracking-wider bg-[#18181B] text-[#A1A1AA] hover:text-white transition-all duration-300"
                         >
                           <Github className="w-4 h-4" />
                           <span>Repository</span>
@@ -380,18 +403,18 @@ const Projects = () => {
         </motion.div>
 
         {/* Bottom Banner Callout */}
-        <div data-aos="fade-up" className="mt-16 w-full max-w-4xl p-6 md:p-8 rounded-3xl bg-gradient-to-r from-red-950/30 via-black to-red-950/20 border border-red-500/20 backdrop-blur-xl flex flex-col md:flex-row items-center justify-between gap-6 text-center md:text-left">
+        <div className="mt-16 w-full max-w-4xl p-8 rounded-3xl bg-[#111111] border border-[#27272A] flex flex-col md:flex-row items-center justify-between gap-6 text-center md:text-left shadow-[0_20px_40px_rgba(0,0,0,0.6)]">
           <div>
-            <h4 className="text-lg md:text-xl font-bold text-white mb-1">
+            <h4 className="font-space text-lg md:text-xl font-bold text-white mb-1">
               Have a custom project or client vision in mind?
             </h4>
-            <p className="text-xs md:text-sm text-gray-400">
+            <p className="font-inter text-xs md:text-sm text-[#A1A1AA]">
               Let's engineer tailored MERN full-stack architectures and high-converting modern web applications.
             </p>
           </div>
           <a
             href="#contact"
-            className="shrink-0 px-6 py-3 rounded-xl bg-white text-black text-xs font-bold uppercase tracking-wider hover:bg-[#ff2a2a] hover:text-white transition-all duration-300 shadow-lg"
+            className="font-space shrink-0 px-6 py-3 rounded-full bg-[#FF2A2A] hover:bg-white text-white hover:text-black text-xs font-bold uppercase tracking-wider transition-all duration-300 shadow-[0_0_20px_rgba(255,42,42,0.4)]"
           >
             Start a Conversation
           </a>
